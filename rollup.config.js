@@ -4,7 +4,12 @@ import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import css from 'rollup-plugin-css-only';
+import replace from '@rollup/plugin-replace';
+import dotenv from 'dotenv';
 
+dotenv.config();
+
+const CLIENT_ID = process.env.CLIENT_ID;
 const production = !process.env.ROLLUP_WATCH;
 
 function serve() {
@@ -37,6 +42,17 @@ export default {
 		file: 'public/build/bundle.js'
 	},
 	plugins: [
+		replace({
+			ENV_CLIENT_ID: CLIENT_ID,
+			preventAssignment: true,
+	  
+			// 2 level deep object should be stringify
+			process: JSON.stringify({
+			  env: {
+				client: CLIENT_ID,
+			  }
+			}),
+		}),
 		svelte({
 			compilerOptions: {
 				// enable run-time checks when not in production
