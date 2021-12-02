@@ -7,7 +7,8 @@
        console.log('Email: ' + profile.getEmail());
     };
     const metaTag = document.querySelector('meta[name="google-signin-client_id"]')
-    metaTag.content = "159286373359-geta9ia939ah6np21elk8ol2j7rgv4tr.apps.googleusercontent.com"
+//     I HAVEN'T FORMATED THE .ENV FILE.  THIS IS CURRENTLY BEING HARDCODED 
+    metaTag.content = "*** your CLIENT_ID"
 
   </script>
 <svelte:head>
