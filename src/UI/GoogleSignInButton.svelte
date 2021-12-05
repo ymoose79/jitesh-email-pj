@@ -8,9 +8,10 @@
   let btnSignIn;
   let btnSignOut;
   let authStatus;
-  let isAuthorized;
+
   let gBtn;
-  let signOutBtn;
+  let currentApiRequest;
+  let isAuthorized;
   metaTag.content = CLIENT_ID;
 
   // window.onSignIn = (googleUser) => {
@@ -32,7 +33,7 @@
   function initClient() {
     // generates methods the application can use
     var discoveryUrl =
-      "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest";
+      "https://people.googleapis.com/$discovery/rest?version=v1";
 
     gapi.client
       .init({
@@ -45,7 +46,19 @@
         GoogleAuth = gapi.auth2.getAuthInstance();
         GoogleAuth.signIn();
         GoogleAuth.isSignedIn.listen(updateSigninStatus);
+        start();
       });
+  }
+  function start() {
+    try {
+      let apiRequest = gapi.client.discovery.apis.list();
+      let result = JSON.parse(apiRequest.body);
+      console.log(result);
+
+      console.log("🐯🐯🐯");
+    } catch (e) {
+      console.log(e);
+    }
   }
   /**
    * Store the request details. Then check to determine whether the user
@@ -79,14 +92,20 @@
       }
     } else {
       isAuthorized = false;
+      GoogleAuth.signOut();
     }
   }
-  function notAuthroized(){
-    isAuthorized = false;
-    gBtn.classList.remove('--hide')
-    signOutBtn.classList.add('--hide')
-    updateSigninStatus();
-  }
+
+  // let request = gapi.client.request({
+  //   'method': 'GET',
+  //   'path': '/v1/contactGroups'
+  // })
+
+  // function getContacts() {
+  //   request.execute(function(res) {
+  //     console.log(res)
+  //   })
+  // }
 </script>
 
 <!-- src="https://apis.google.com/js/api.js" -->
@@ -107,9 +126,9 @@
 <svelte:window on:load={handleClientLoad} />
 
 <h2 class="alert alert-primary">sign in with google</h2>
-<div class="g-signin2 --hide" on:bind={gBtn}/>
-<button id="signout" on:click={notAuthroized} on:bind={signOutBtn}>sign out</button>
+<button class="g-signin2 " bind:this={gBtn}>sign in</button>
 
+<!-- <button id="getList" on:click={getContacts}>get contacts</button> -->
 <style>
   .--hide {
     display: none;
