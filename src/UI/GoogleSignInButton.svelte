@@ -7,7 +7,8 @@
 
   let currentApiRequest;
   let isAuthorized;
-  let gBtn;
+  let btnIn;
+  let btnOut;
   metaTag.content = CLIENT_ID;
 
   // window.onSignIn = (googleUser) => {
@@ -47,8 +48,16 @@
       GoogleAuth.signIn();
       GoogleAuth.isSignedIn.listen(updateSigninStatus);
       start()
+      btnOut.classList.remove('--hide')
+      btnIn.classList.add('--hide')
     }
   };
+
+  const signOut = () => {
+    GoogleAuth.signOut();
+    btnIn.classList.remove('--hide')
+    btnOut.classList.add('--hide')
+  }
 
   // makes api call
   function start() {
@@ -87,9 +96,8 @@
    */
 
 
-  //  following function has to exist, but you will never see an 🐔
+  //  🐔 = in, 🐋 = out
   function updateSigninStatus(isSignedIn) {
-    console.log('🐔')
     if (isSignedIn) {
       console.log('🐔')
       isAuthorized = true;
@@ -97,7 +105,7 @@
         sendAuthorizedApiRequest(currentApiRequest);
       }
     } else {
-      console.log('🐔')
+      console.log('🐋')
       isAuthorized = false;
     }
   }
@@ -116,15 +124,16 @@
 <!-- <svelte:window on:load={handleClientLoad} /> -->
 
 <h2 class="alert alert-primary">sign in with google</h2>
-<button class="g-signin2x" bind:this={gBtn} on:click={handleAuth}
+<button class="sign_in" bind:this={btnIn} on:click={handleAuth}
   >sign in</button
 >
+<button class="sign_out --hide" bind:this={btnOut} on:click={signOut}>sign out</button>
 
 <style>
   .--hide {
     display: none;
   }
-  .g-signin2x {
+  button {
     position: absolute;
     top: 50%;
     left: 50%;
