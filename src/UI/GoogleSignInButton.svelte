@@ -1,5 +1,5 @@
 <script>
-  import {createEventDispatcher} from 'svelte';
+  import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
   const CLIENT_ID = "ENV_CLIENT_ID";
@@ -12,7 +12,6 @@
   let isAuthorized;
   let btnIn;
   let btnOut;
-
 
   metaTag.content = CLIENT_ID;
 
@@ -66,12 +65,13 @@
   // makes api call
   function start() {
     let profile = GoogleAuth.currentUser.get().getBasicProfile();
-    dispatch('saveProfileInfo', {
-    fullName: profile.getName(),
-    givenName: profile.getGivenName(),
-    familyName: profile.getFamilyName(),
-    imageUrl: profile.getImageUrl(),
-    email: profile.getEmail()
+    dispatch("saveProfileInfo", {
+      fullName: profile.getName(),
+      givenName: profile.getGivenName(),
+      familyName: profile.getFamilyName(),
+      imageUrl: profile.getImageUrl(),
+      email: profile.getEmail(),
+      isAuthorized: true
     });
     try {
       let apiRequest = gapi.client.people.contactGroups.list();
@@ -110,11 +110,13 @@
   function updateSigninStatus(isSignedIn) {
     if (isSignedIn) {
       isAuthorized = true;
+      console.log('👌')
       if (currentApiRequest) {
         sendAuthorizedApiRequest(currentApiRequest);
       }
     } else {
       isAuthorized = false;
+      console.log('⭕️')
     }
   }
 </script>
@@ -132,7 +134,8 @@
 
 <button class="sign_in" bind:this={btnIn} on:click={handleAuth}>sign in</button>
 <button class="sign_out --hide" bind:this={btnOut} on:click={signOut}
-  >sign out</button>
+  >sign out</button
+>
 
 <style>
   .--hide {

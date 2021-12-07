@@ -1,21 +1,20 @@
 <script>
   import GoogleSignInButton from "./UI/GoogleSignInButton.svelte";
-
-  //   put profile vars in arr
-  // 	helper f{} for adding/removing classes
-  // craete a component & itirate through profileArr to streamline
+import EmailButton from "./UI/SendEmailButton.svelte"
   let title;
 
+  //   event.details from GoogleSignInButtong.svelte
   let fullName;
   let givenName;
   let familyName;
   let imageUrl;
   let email;
+  let isAuthorized;
+  // 	array w/ those key:value pairs stored
+  let profileArr;
 
-  let profileArr=[];
 
-  let img;
-
+//   helper f{}s to manage DOM
   const removeHidden = function (boundElement) {
     boundElement.classList.remove("--hide");
   };
@@ -23,37 +22,40 @@
     boundElement.classList.add("--hide");
   };
 
-    function signInHtml(event) {
-  	  const profileDetails = event.detail
-  	  profileArr = [profileDetails];
 
-  	  fullName = event.detail.fullName;
-  	  givenName = event.detail.givenName;
-  	  familyName = event.detail.familyName;
-  	  imageUrl = event.detail.imageUrl;
-  	  email = event.detail.email;
-  	}
-  
-  // console.log(profileArr, '***', profileArr.familyName)
+//   assigns variables via GoogleSignInButton
+  function signInHtml(event) {
+    const profileDetails = event.detail;
+    profileArr = profileDetails;
+    console.log(profileArr);
+
+    fullName = event.detail.fullName;
+    givenName = event.detail.givenName;
+    familyName = event.detail.familyName;
+    imageUrl = event.detail.imageUrl;
+    email = event.detail.email;
+
+    isAuthorized = event.detail.isAuthorized;
+  }
+
 </script>
 
 <main>
-  <h2 class="title" bind:this={title}>sign in with google</h2>
-  <GoogleSignInButton on:saveProfileInfo={signInHtml} />
-  <img
-    class="imageUrl --hide"
-    bind:this={img}
-    src={imageUrl}
-    alt="profile pic"
-  />
-  <h1 class="fullName --hide" bind:this={fullName}>FULL NAME: {fullName}</h1>
-  <h1 class="givenName --hide" bind:this={givenName}>
-    GIVEN NAME: {givenName}
-  </h1>
-  <h1 class="familyName --hide" bind:this={familyName}>
-    FAMILY NAME: {familyName}
-  </h1>
-  <h1 class="email --hide" bind:this={email}>EMAIL {email}</h1>
+  {#if !isAuthorized}
+    <h2 class="title">sign in with google</h2>
+    <GoogleSignInButton on:saveProfileInfo={signInHtml} />
+  {:else}
+    <img class="image " src={imageUrl} alt="profile pic" />
+    <h1 class="fullName ">FULL NAME: {fullName}</h1>
+    <h1 class="givenName ">
+      GIVEN NAME: {givenName}
+    </h1>
+    <h1 class="familyName ">
+      FAMILY NAME: {familyName}
+    </h1>
+    <h1 class="email">EMAIL {email}</h1>
+	<EmailButton/>
+  {/if}
 </main>
 
 <style>
@@ -63,10 +65,7 @@
     max-width: 240px;
     margin: 0 auto;
   }
-  .--hide {
-    /* display: none; */
-    color: red;
-  }
+
   h2 {
     color: #ff3e00;
     text-transform: uppercase;
