@@ -27,8 +27,6 @@ import EmailButton from "./UI/SendEmailButton.svelte"
   function signInHtml(event) {
     const profileDetails = event.detail;
     profileArr = profileDetails;
-    console.log(profileArr);
-
     fullName = event.detail.fullName;
     givenName = event.detail.givenName;
     familyName = event.detail.familyName;

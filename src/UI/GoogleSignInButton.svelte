@@ -24,7 +24,7 @@
   // };
 
   let GoogleAuth;
-  var SCOPE = "https://www.googleapis.com/auth/drive.metadata.readonly";
+  let SCOPES = "https://www.googleapis.com/auth/gmail.send";
 
   // fires when window loads:
   function handleClientLoad() {
@@ -34,13 +34,15 @@
   function initClient() {
     // generates methods the application can use
     var discoveryUrl =
-      "https://people.googleapis.com/$discovery/rest?version=v1";
+      "https://gmail.googleapis.com/$discovery/rest?version=v1";
 
     gapi.client.init({
       apiKey: "AIzaSyDlWLse9HDF_8vwgv9B-zt1xPpxK0YLYp8",
       clientId: CLIENT_ID,
       discoveryDocs: [discoveryUrl],
-      scope: SCOPE,
+      scope: SCOPES,
+      // means that we do not prompt the user with a login/permissions modal if not authenticated
+      immediate: true,
     });
   }
 
@@ -71,52 +73,28 @@
       familyName: profile.getFamilyName(),
       imageUrl: profile.getImageUrl(),
       email: profile.getEmail(),
-      isAuthorized: true
+      isAuthorized: true,
     });
-    try {
-      let apiRequest = gapi.client.people.contactGroups.list();
-      console.log("apiRequest", apiRequest);
-      // let result = JSON.parse(apiRequest.body);
-      // console.log(result);
-    } catch (e) {
-      console.log(e);
-    }
+    // try {
+    //   let apiRequest = gapi.client.people.contactGroups.list();
+    //   console.log("apiRequest", apiRequest);
+    //   // let result = JSON.parse(apiRequest.body);
+    //   // console.log(result);
+    // } catch (e) {
+    //   console.log(e);
+    // }
   }
-  /**---------------> sendAuthorizedApiRequest() currently not doing anything.....
-   * Store the request details. Then check to determine whether the user
-   * has authorized the application.
-   *   - If the user has granted access, make the API request.
-   *   - If the user has not granted access, initiate the sign-in flow.
-   */
-  // function sendAuthorizedApiRequest(requestDetails) {
-  //   currentApiRequest = requestDetails;
-  //   if (isAuthorized) {
-  //     // Make API request
-  //     // gapi.client.request(requestDetails)
-
-  //     // Reset currentApiRequest variable.
-  //     currentApiRequest = {};
-  //   } else {
-  //     GoogleAuth.signIn();
-  //   }
-  // }
-
-  /**
-   * Listener called when user completes auth flow. If the currentApiRequest
-   * variable is set, then the user was prompted to authorize the application
-   * before the request executed. In that case, proceed with that API request.
-   */
-
+  
   function updateSigninStatus(isSignedIn) {
     if (isSignedIn) {
       isAuthorized = true;
-      console.log('👌')
+      console.log("👌");
       if (currentApiRequest) {
         sendAuthorizedApiRequest(currentApiRequest);
       }
     } else {
       isAuthorized = false;
-      console.log('⭕️')
+      console.log("⭕️");
     }
   }
 </script>
