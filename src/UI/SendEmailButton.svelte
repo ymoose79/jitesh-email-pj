@@ -2,30 +2,7 @@
   export let to = "justin.r.stock@gmail.com";
   export let name = "Justin Stock";
 
-  let files = [{
-    type: "txt/plain",
-    name: "xyz"
-  },{
-    type: "txt/plain",
-    name: "abvc"
-  }];
-  
-  let multipleFiles='';
-  
-  
-  // ------------------> contents of file(?)
-  let data;
-  //   $: {
-  //     if (files && files[0]) {
-  //         let binfile = files[0];
-  //         let reader = new FileReader();
-  //         reader.onload = function(evt) {
-  //             data = new Uint8Array(evt.target.result);
-  //         }
-  //         reader.readAsArrayBuffer(binfile);
-  //     }
-  // }
-
+  let files = "";
 
   function loadGmailApi() {
     gapi.client.load("gmail", "v1", formatFile());
@@ -46,7 +23,6 @@ Content-Type: text/plain
 The actual message text goes here
 --foo_bar_baz
 ${multipleFiles}
-
 --foo_bar_baz--
 `
     )
@@ -59,34 +35,43 @@ ${multipleFiles}
         raw: base64EncodedEmail,
       },
     });
-      request.execute(function (res) {
-        console.log(res);
-      });
+    request.execute(function (res) {
+      console.log(res);
+    });
   }
 
-  //   Content-Type: text/markdown; name="new.txt"
-  // Content-Disposition: attachment; filename="new.txt"
   function formatFile() {
-    files.forEach((file) => {
-      multipleFiles += "--foo_bar_baz\n";
-      for (let key in file) {
-        if (`${[key]}` === "type") {
-          multipleFiles += `Content-Type: ${file[key]}\n`;
-        } else if (`${[key]}` === "name")
-          multipleFiles += `Content-Disposition: attachment; filename="${file[key]}\n\n\n`;
+    // ---------------- send 1 attachment
+    let multipleFiles = "";
+    if (!files[1]) {
+      multipleFiles += `Content-type: ${files[0].type} name="${files[0].name}"\n`;
+      multipleFiles += `Content-Disposition: attachment; filename=${files[0].name}\n\n`;
+      multipleFiles += `waiting on data....`;
+
+      sendsEmail(multipleFiles);
+    }
+    // ---------------- send multiple attachment
+    else {
+      for (let i = 0, numFiles = files.length; i < numFiles; i++) {
+        multipleFiles += "--foo_bar_baz\n";
+        multipleFiles += `Content-type: ${files[i].type} name="${files[i].name}"\n`;
+        multipleFiles += `Content-Disposition: attachment; filename=${files[i].name}\n\n`;
+        multipleFiles += `waiting on data....`;
       }
-      multipleFiles += `line 1\n`;
-      multipleFiles += `line 2\n`;
-    });
-    sendsEmail(multipleFiles)
-    console.log(multipleFiles);
+      sendsEmail(multipleFiles);
+    }
   }
 </script>
 
-<form on:submit|preventDefault>
+<form on:submit|preventDefault={loadGmailApi}>
   <input type="file" bind:files multiple />
-  <input type="text" placeholder="TO email address" bind:value={to} />
-  <input type="text" placeholder="FROM name" bind:value={name} />
-  <button on:click={loadGmailApi}>Send Email</button>
+  <label
+    >To:
+    <input type="text" placeholder="TO email address" bind:value={to} />
+  </label>
+  <label
+    >From:
+    <input type="text" placeholder="FROM name" bind:value={name} />
+  </label>
+  <button>Send Email</button>
 </form>
-<!-- <textarea cols="25">{data}</textarea> -->
