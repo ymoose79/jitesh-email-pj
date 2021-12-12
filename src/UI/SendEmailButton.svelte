@@ -1,64 +1,40 @@
 <script>
   export let to = "justin.r.stock@gmail.com";
   export let name = "Justin Stock";
-  let files;
-  $: console.log({files});
-  const CLIENT_ID = "ENV_CLIENT_ID";
-  let apiKey = "AIzaSyDlWLse9HDF_8vwgv9B-zt1xPpxK0YLYp8";
-  let scopes = "https://www.googleapis.com/auth/gmail.send";
 
-  function checkAuth() {
-    gapi.auth.authorize(
-      {
-        client_id: CLIENT_ID,
-        scope: scopes,
-        immediate: true,
-      },
-      handleAuthResult
-    );
-  }
+  let files = [{
+    type: "txt/plain",
+    name: "xyz"
+  },{
+    type: "txt/plain",
+    name: "abvc"
+  }];
+  
+  let multipleFiles='';
+  
+  
+  // ------------------> contents of file(?)
+  let data;
+  //   $: {
+  //     if (files && files[0]) {
+  //         let binfile = files[0];
+  //         let reader = new FileReader();
+  //         reader.onload = function(evt) {
+  //             data = new Uint8Array(evt.target.result);
+  //         }
+  //         reader.readAsArrayBuffer(binfile);
+  //     }
+  // }
 
-  function handleAuthClick() {
-    gapi.auth.authorize(
-      {
-        client_id: CLIENT_ID,
-        scope: scopes,
-        immediate: false,
-      },
-      handleAuthResult
-    );
-    return false;
-  }
-
-  function handleAuthResult(authResult) {
-    if (authResult && !authResult.error) {
-      console.log(authResult);
-      loadGmailApi();
-      // $('#authorize-button').remove();
-      // $('.table-inbox').removeClass("hidden");
-    }
-    //   else {
-    // $('#authorize-button').removeClass("hidden");
-    // $('#authorize-button').on('click', function(){
-    //   handleAuthClick();
-    // });
-    //   }
-  }
 
   function loadGmailApi() {
-    gapi.client.load("gmail", "v1", displayInbox());
+    gapi.client.load("gmail", "v1", formatFile());
   }
 
-  function displayInbox() {
-    // let request = gapi.client.gmail.users.messages.list({
-    //   userId: "me",
-    //   labelIds: "INBOX",
-    //   maxResults: "10",
-    // });
-
+  function sendsEmail(multipleFiles) {
     let base64EncodedEmail = btoa(
-    //   `Content-Type:  text/plain; charset="UTF-8"
-`Content-Type: multipart/mixed; boundary="foo_bar_baz"
+      //   `Content-Type:  text/plain; charset="UTF-8"
+      `Content-Type: multipart/mixed; boundary="foo_bar_baz"
 Content-Transfer-Encoding: message/rfc2822
 To: ${to}
 From: "${name}" <justin.r.stock@gmail.com>
@@ -69,11 +45,8 @@ Content-Type: text/plain
 
 The actual message text goes here
 --foo_bar_baz
-Content-Type: text/plain; name="test.txt"
-Content-Disposition: attachment; filename="test.txt"
+${multipleFiles}
 
-line 1
-line 2
 --foo_bar_baz--
 `
     )
@@ -86,13 +59,34 @@ line 2
         raw: base64EncodedEmail,
       },
     });
-    request.execute(function (res) {
-      console.log(res.messages);
+      request.execute(function (res) {
+        console.log(res);
+      });
+  }
+
+  //   Content-Type: text/markdown; name="new.txt"
+  // Content-Disposition: attachment; filename="new.txt"
+  function formatFile() {
+    files.forEach((file) => {
+      multipleFiles += "--foo_bar_baz\n";
+      for (let key in file) {
+        if (`${[key]}` === "type") {
+          multipleFiles += `Content-Type: ${file[key]}\n`;
+        } else if (`${[key]}` === "name")
+          multipleFiles += `Content-Disposition: attachment; filename="${file[key]}\n\n\n`;
+      }
+      multipleFiles += `line 1\n`;
+      multipleFiles += `line 2\n`;
     });
+    sendsEmail(multipleFiles)
+    console.log(multipleFiles);
   }
 </script>
 
-<input type="file" bind:files={files} multiple>
-<input type="text" placeholder="TO email address" bind:value={to} />
-<input type="text" placeholder="FROM name" bind:value={name} />
-<button on:click={checkAuth}>Send Email</button>
+<form on:submit|preventDefault>
+  <input type="file" bind:files multiple />
+  <input type="text" placeholder="TO email address" bind:value={to} />
+  <input type="text" placeholder="FROM name" bind:value={name} />
+  <button on:click={loadGmailApi}>Send Email</button>
+</form>
+<!-- <textarea cols="25">{data}</textarea> -->
