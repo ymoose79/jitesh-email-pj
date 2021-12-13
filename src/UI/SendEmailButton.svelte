@@ -1,10 +1,18 @@
 <script>
+  // punch list:
+  //    - allow for multiple files
+  //          -"data" is overwriting.  needs to be loop.
+  //    - integrate w/ Drive
+  //    - add forms
+  //    - add payment integration (stripe?)
+
   export let to = "justin.r.stock@gmail.com";
   export let name = "Justin Stock";
-  export let body = ""
+  export let body = "";
 
   let files = "";
 
+  // ---------------- returns the blob <---------
   const toBase64 = (file) =>
     new Promise((res, rej) => {
       const reader = new FileReader();
@@ -14,42 +22,59 @@
     });
 
 
+  // ---------------- formats the blob/sends to formatFile() <---------
   async function sendEmail() {
     if (!files[1]) {
       const file = files[0];
       const data = await toBase64(file);
-      const dataArr = data.split(',')
-     const x = dataArr.shift()
-     const readyToSendData = dataArr.join();
+      const dataArr = data.split(",");
+      const x = dataArr.shift();
+      const readyToSendData = dataArr.join();
       formatFile(readyToSendData);
+    } else {
+      let fileArr = [];
+      for (let i = 0, numFiles = files.length; i < numFiles; i++) {
+        const file = files[i];
+        const data = await toBase64(file);
+        const dataArr = data.split(",");
+        const x = dataArr.shift();
+        const readyToSendData = dataArr.join();
+        fileArr = [readyToSendData, ...fileArr];
+      }
+      formatFile(fileArr);
     }
   }
 
+  // ---------------- prepares attachments for gmail<---------
   function formatFile(data) {
-    // ---------------- send 1 attachment
+    // variable to store format for attachment template
     let multipleFiles = "";
+    
+    // ---------------- send 1 attachment
     if (!files[1]) {
       multipleFiles += `Content-Type: ${files[0].type} name="${files[0].name}"\n`;
       multipleFiles += `Content-Transfer-Encoding: base64\n`;
       multipleFiles += `Content-Disposition: attachment; filename=${files[0].name}\n\n`;
 
       multipleFiles += data;
-
       forwardAttachments(multipleFiles);
     }
-    // ---------------- send multiple attachment
-    // else {
-    //   for (let i = 0, numFiles = files.length; i < numFiles; i++) {
-    //     multipleFiles += "--foo_bar_baz\n";
-    //     multipleFiles += `Content-type: ${files[i].type} name="${files[i].name}"\n`;
-    //     multipleFiles += `Content-Disposition: attachment; filename=${files[i].name}\n\n`;
-    //     multipleFiles += `waiting on data....\n\n`;
-    //   }
-    //   forwardAttachments(multipleFiles);
-    // }
+
+    // ---------------- send multiple attachment <---------
+    else {
+      for (let i = 0, numFiles = files.length; i < numFiles; i++) {
+        multipleFiles += `Content-type: ${files[i].type} name="${files[i].name}"\n`;
+        multipleFiles += `Content-Transfer-Encoding: base64\n`;
+        multipleFiles += `Content-Disposition: attachment; filename=${files[i].name}\n\n`;
+        
+        multipleFiles += data;
+        multipleFiles += "\n--foo_bar_baz\n";
+      }
+      forwardAttachments(multipleFiles);
+    }
   }
 
-
+  // ----------------  sends attachment template <---------
   function forwardAttachments(multipleFiles) {
     let base64EncodedEmail = btoa(
       //   `Content-Type:  text/plain; charset="UTF-8"
@@ -93,8 +118,8 @@ ${multipleFiles}
     <input type="text" placeholder="FROM name" bind:value={name} />
   </label>
   <label
-  >Body:
-  <textarea rows="10" cols="50" bind:value={body} />
-</label>
+    >Body:
+    <textarea rows="10" cols="50" bind:value={body} />
+  </label>
   <button>Send Email</button>
 </form>
