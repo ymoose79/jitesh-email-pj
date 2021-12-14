@@ -111,7 +111,6 @@ ${multipleFiles}
     to = "justin.r.stock@gmail.com";
     name = "Justin Stock";
     body = "";
-    files = "";
   }
 </script>
 
