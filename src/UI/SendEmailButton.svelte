@@ -21,7 +21,6 @@
       reader.onerror = (err) => rej(err);
     });
 
-
   // ---------------- formats the blob/sends to formatFile() <---------
   async function sendEmail() {
     if (!files[1]) {
@@ -39,7 +38,7 @@
         const dataArr = data.split(",");
         const x = dataArr.shift();
         const readyToSendData = dataArr.join();
-        fileArr = [readyToSendData, ...fileArr];
+        fileArr = [...fileArr, readyToSendData];
       }
       formatFile(fileArr);
     }
@@ -49,7 +48,7 @@
   function formatFile(data) {
     // variable to store format for attachment template
     let multipleFiles = "";
-    
+
     // ---------------- send 1 attachment
     if (!files[1]) {
       multipleFiles += `Content-Type: ${files[0].type} name="${files[0].name}"\n`;
@@ -66,8 +65,8 @@
         multipleFiles += `Content-type: ${files[i].type} name="${files[i].name}"\n`;
         multipleFiles += `Content-Transfer-Encoding: base64\n`;
         multipleFiles += `Content-Disposition: attachment; filename=${files[i].name}\n\n`;
-        
-        multipleFiles += data;
+
+        multipleFiles += data[i];
         multipleFiles += "\n--foo_bar_baz\n";
       }
       forwardAttachments(multipleFiles);
@@ -104,6 +103,15 @@ ${multipleFiles}
       },
     });
     request.execute();
+    alert("email has been sent 🍺");
+    reset();
+  }
+
+  function reset() {
+    to = "justin.r.stock@gmail.com";
+    name = "Justin Stock";
+    body = "";
+    files = "";
   }
 </script>
 
