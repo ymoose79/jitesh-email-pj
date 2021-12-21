@@ -9,6 +9,7 @@
   export let to = "justin.r.stock@gmail.com";
   export let name = "Justin Stock";
   export let body = "";
+  export let draftSubject;
 
   let files = "";
 
@@ -23,7 +24,10 @@
 
   // ---------------- formats the blob/sends to formatFile() <---------
   async function sendEmail() {
-    if (!files[1]) {
+    if (!files) {
+      forwardAttachments();
+    }
+    else if (!files[1]) {
       const file = files[0];
       const data = await toBase64(file);
       const dataArr = data.split(",");
@@ -108,6 +112,7 @@ ${multipleFiles}
   }
 
   function reset() {
+    console.log(draftSubject)
     to = "justin.r.stock@gmail.com";
     name = "Justin Stock";
     body = "";
