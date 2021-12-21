@@ -15,14 +15,6 @@
 
   metaTag.content = CLIENT_ID;
 
-  // window.onSignIn = (googleUser) => {
-  //   const profile = googleUser.getBasicProfile();
-  //   console.log("ID: " + profile.getId());
-  //   console.log("Name: " + profile.getName());
-  //   console.log("Image URL: " + profile.getImageUrl());
-  //   console.log("Email: " + profile.getEmail());
-  // };
-
   let GoogleAuth;
   let SCOPES = "https://www.googleapis.com/auth/gmail.send";
 
@@ -53,8 +45,6 @@
       GoogleAuth.signIn();
       GoogleAuth.isSignedIn.listen(updateSigninStatus);
       start();
-      btnOut.classList.remove("--hide");
-      btnIn.classList.add("--hide");
     }
   };
 
@@ -69,20 +59,9 @@
     let profile = GoogleAuth.currentUser.get().getBasicProfile();
     dispatch("saveProfileInfo", {
       fullName: profile.getName(),
-      givenName: profile.getGivenName(),
-      familyName: profile.getFamilyName(),
       imageUrl: profile.getImageUrl(),
-      email: profile.getEmail(),
       isAuthorized: true,
     });
-    // try {
-    //   let apiRequest = gapi.client.people.contactGroups.list();
-    //   console.log("apiRequest", apiRequest);
-    //   // let result = JSON.parse(apiRequest.body);
-    //   // console.log(result);
-    // } catch (e) {
-    //   console.log(e);
-    // }
   }
   
   function updateSigninStatus(isSignedIn) {
@@ -111,17 +90,13 @@
 <!-- <svelte:window on:load={handleClientLoad} /> -->
 
 <button class="sign_in" bind:this={btnIn} on:click={handleAuth}>sign in</button>
-<button class="sign_out --hide" bind:this={btnOut} on:click={signOut}
-  >sign out</button
->
+<!-- <button class="sign_out" bind:this={btnOut} on:click={signOut}>sign out</button> -->
 
 <style>
-  .--hide {
-    display: none;
-  }
+/* 
   button {
     position: absolute;
     top: 50%;
     left: 50%;
-  }
+  } */
 </style>

@@ -1,6 +1,6 @@
 <script>
   import GoogleSignInButton from "./UI/GoogleSignInButton.svelte";
-import EmailButton from "./UI/SendEmailButton.svelte"
+import SendEmail from "./UI/SendEmail.svelte"
   let title;
 
   //   event.details from GoogleSignInButtong.svelte
@@ -14,24 +14,12 @@ import EmailButton from "./UI/SendEmailButton.svelte"
   let profileArr;
 
 
-//   helper f{}s to manage DOM
-  const removeHidden = function (boundElement) {
-    boundElement.classList.remove("--hide");
-  };
-  const addHidden = function (boundElement) {
-    boundElement.classList.add("--hide");
-  };
-
-
 //   assigns variables via GoogleSignInButton
   function signInHtml(event) {
     const profileDetails = event.detail;
     profileArr = profileDetails;
     fullName = event.detail.fullName;
-    givenName = event.detail.givenName;
-    familyName = event.detail.familyName;
     imageUrl = event.detail.imageUrl;
-    email = event.detail.email;
 
     isAuthorized = event.detail.isAuthorized;
   }
@@ -45,14 +33,7 @@ import EmailButton from "./UI/SendEmailButton.svelte"
   {:else}
     <img class="image " src={imageUrl} alt="profile pic" />
     <h1 class="fullName ">FULL NAME: {fullName}</h1>
-    <h1 class="givenName ">
-      GIVEN NAME: {givenName}
-    </h1>
-    <h1 class="familyName ">
-      FAMILY NAME: {familyName}
-    </h1>
-    <h1 class="email">EMAIL {email}</h1>
-	<EmailButton/>
+	<SendEmail/>
   {/if}
 </main>
 
