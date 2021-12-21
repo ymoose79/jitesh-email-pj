@@ -12,7 +12,8 @@
 
   // checkbox
   let yes = false;
-  let draftSubject="";
+  let draftSubject="christmas";
+  let body="";
 
   //   assigns variables via GoogleSignIn
   function signInHtml(event) {
@@ -22,6 +23,11 @@
     imageUrl = event.detail.imageUrl;
 
     isAuthorized = event.detail.isAuthorized;
+  }
+
+  // assigns messageBody from draft
+  function checkBody(event){
+    body = event.detail
   }
 </script>
 
@@ -38,10 +44,10 @@
         to pull a template from a draft?</label
       >
       {#if yes}
-       <DraftId {draftSubject}/>
+       <DraftId {draftSubject} on:draftIdMessage={checkBody}/>
       {/if}
     </div>
-    <SendEmail {draftSubject} />
+    <SendEmail {draftSubject} {body}/>
   {/if}
 </main>
 
